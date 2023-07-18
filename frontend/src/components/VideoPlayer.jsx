@@ -53,6 +53,7 @@ const VideoPlayer = ({ video, width, height }) => {
 				className={`w-full h-full z-0 object-cover`}
 				onPlay={() => setPlaying(true)}
 				onPause={() => setPlaying(true)}
+				onEnded={() => setPlaying(false)}
 				onTimeUpdate={handleProgress}
 			>
 				<source
@@ -95,8 +96,7 @@ const VideoPlayer = ({ video, width, height }) => {
 					<progress
 						max={100}
 						value={progress}
-						color="white"
-						className="rounded-2xl h-1 w-full z-30 mx-5"
+						className="rounded-2xl h-1 w-full z-30 mx-5 accent-white"
 						onClick={handleProgressClick}
 					/>
 					<p className="text-white">
