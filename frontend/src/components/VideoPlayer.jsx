@@ -8,15 +8,14 @@ const VideoPlayer = ({ video, width, height }) => {
 	const [currentTime, setCurrentTime] = useState(0);
 	const [videoTime, setVideoTime] = useState(0);
 	const [progress, setProgress] = useState(0);
+	const [started, setStarted] = useState(false);
 
 	const handlePlayPause = () => {
 		setVideoTime(videoRef.current?.duration);
 		if (playing) {
 			videoRef.current.pause();
-			setPlaying(false);
 		} else {
 			videoRef.current.play();
-			setPlaying(true);
 		}
 	};
 
@@ -38,22 +37,22 @@ const VideoPlayer = ({ video, width, height }) => {
 		);
 	};
 
-	const handleProgressClick = (event) => {
-		const x = (event.clientX * videoTime) / event.currentTarget.offsetWidth - 1;
-
-		videoRef.current.currentTime = x.toFixed(2);
-	};
-
 	useEffect(() => {}, [progress]);
 
 	return (
-		<div className={`w-[${width}px] relative bg-black`}>
+		<div className={`w-[${width}px] max-w-[1280px] relative bg-black`}>
 			<video
 				ref={videoRef}
-				className={`w-full h-full z-0 object-cover`}
-				onPlay={() => setPlaying(true)}
-				onPause={() => setPlaying(true)}
-				onEnded={() => setPlaying(false)}
+				className={`w-full h-full z-0 object-cover relative top-5`}
+				onPlay={() => {
+					setPlaying(true);
+					setStarted(true);
+				}}
+				onPause={() => setPlaying(false)}
+				onEnded={() => {
+					setPlaying(false);
+					setStarted(false);
+				}}
 				onTimeUpdate={handleProgress}
 			>
 				<source
@@ -87,24 +86,25 @@ const VideoPlayer = ({ video, width, height }) => {
 					</button>
 				</div>
 
-				<div className="flex items-center justify-evenly w-full h-full">
-					<p className="text-white">
-						{Math.floor(currentTime / 60) +
-							":" +
-							("0" + Math.floor(currentTime % 60)).slice(-2)}
-					</p>
-					<progress
-						max={100}
-						value={progress}
-						className="rounded-2xl h-1 w-full z-30 mx-5 accent-white"
-						onClick={handleProgressClick}
-					/>
-					<p className="text-white">
-						{Math.floor(videoTime / 60) +
-							":" +
-							("0" + Math.floor(videoTime % 60)).slice(-2)}
-					</p>
-				</div>
+				{started && (
+					<div className="flex items-center justify-evenly w-full h-full">
+						<p className="text-white">
+							{Math.floor(currentTime / 60) +
+								":" +
+								("0" + Math.floor(currentTime % 60)).slice(-2)}
+						</p>
+						<progress
+							max={100}
+							value={progress}
+							className="rounded-2xl h-1 w-full z-30 mx-5 accent-white"
+						/>
+						<p className="text-white">
+							{Math.floor(videoTime / 60) +
+								":" +
+								("0" + Math.floor(videoTime % 60)).slice(-2)}
+						</p>
+					</div>
+				)}
 			</div>
 		</div>
 	);
