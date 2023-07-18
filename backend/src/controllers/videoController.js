@@ -60,6 +60,19 @@ exports.postVideo = async (req, res) => {
 					.audioCodec("aac")
 					.audioBitrate(128)
 					.autopad()
+					.on("start", (commandLine) => {
+						console.log("Video compression started");
+					})
+					.on("codecData", (data) => {
+						totalTime = parseInt(data.duration.replace(/:/g, ""));
+					})
+					.on("progress", (progress) => {
+						const time = parseInt(progress.timemark.replace(/:/g, ""));
+
+						const percent = (time / totalTime) * 100;
+
+						console.log(percent + "%");
+					})
 					.on("end", async function () {
 						console.log("Video compression complete!");
 
@@ -84,6 +97,8 @@ exports.postVideo = async (req, res) => {
 							title: req.body.title,
 							file: id + inputFileExtension,
 						});
+
+						console.log("Created thumbnails")
 
 						res.status(200).json({
 							success: true,
